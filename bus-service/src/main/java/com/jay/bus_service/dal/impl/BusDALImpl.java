@@ -2,13 +2,20 @@ package com.jay.bus_service.dal.impl;
 
 import com.jay.bus_service.dal.BusDAL;
 import com.jay.bus_service.dto.BusInputDto;
+import com.jay.bus_service.dto.StaffDto;
 import com.jay.bus_service.dto.StopsIn;
 import com.jay.bus_service.model.*;
 import com.jay.bus_service.repository.BusRepository;
+import com.jay.bus_service.utils.enums.SeatType;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,12 +26,42 @@ import java.util.Map;
 public class BusDALImpl implements BusDAL {
 
     @Autowired
+    private RestTemplate restTemplate;
+
+    @Autowired
     private BusRepository busRepository;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    public StaffDto authenticatedStaffData(String token) {
+        String path = "http://STAFF-SERVICE/staff/?token=" + token;
+        ResponseEntity<StaffDto> staffDtoResponseEntity = restTemplate.getForEntity(path, StaffDto.class);
+        return staffDtoResponseEntity.getBody();
+    }
+
+    @Override
+    public ResponseEntity<?> getBusDataByStaffId(String token) {
+        StaffDto staff = authenticatedStaffData(token);
+        if (staff != null) {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("staffId").is(staff.getId()));
+            return new ResponseEntity<>(mongoTemplate.find(query, Bus.class), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Invalid user", HttpStatus.BAD_REQUEST);
+        }
+    }
 
     @Override
     public ResponseEntity<?> addBusData(String token, BusInputDto busInputDto) {
         try {
             Bus bus = new Bus();
+            StaffDto staff = authenticatedStaffData(token);
+            if (staff != null) {
+                bus.setStaffId(staff.getId());
+            } else {
+                return new ResponseEntity<>("Invalid user", HttpStatus.BAD_REQUEST);
+            }
             bus.setOperatorName(busInputDto.getOperatorName());
             bus.setPhone(busInputDto.getPhone());
             bus.setPriceRange(busInputDto.getPriceRange());
@@ -33,8 +70,10 @@ public class BusDALImpl implements BusDAL {
             bus.setImages(busInputDto.getImages());
 
             Route routeInput = new Route();
+            routeInput.setId(new ObjectId().toString());
             routeInput.setTo(busInputDto.getRoute().getTo());
             routeInput.setFrom(busInputDto.getRoute().getFrom());
+            routeInput.setVia(busInputDto.getRoute().getVia());
             routeInput.setArrivalTime(busInputDto.getRoute().getArrivalTime());
             routeInput.setDepartureTime(busInputDto.getRoute().getDepartureTime());
 
@@ -43,8 +82,10 @@ public class BusDALImpl implements BusDAL {
             List<Stops> stopsInput = new ArrayList<>();
             busInputDto.getStops().forEach(stopItem -> {
                 Stops stop = new Stops();
+                stop.setId(new ObjectId().toString());
                 stop.setName(stopItem.getName());
                 stop.setTime(stopItem.getTime());
+                stop.setType(stopItem.getType());
                 stopsInput.add(stop);
             });
 
@@ -53,6 +94,7 @@ public class BusDALImpl implements BusDAL {
             List<RestStops> restStopsInput = new ArrayList<>();
             busInputDto.getRestStops().forEach(restStopItem -> {
                 RestStops restStop = new RestStops();
+                restStop.setId(new ObjectId().toString());
                 restStop.setName(restStopItem.getName());
                 restStop.setTime(restStopItem.getTime());
                 restStop.setDuration(restStopItem.getDuration());
@@ -62,13 +104,21 @@ public class BusDALImpl implements BusDAL {
             bus.setRestStops(restStopsInput);
 
             List<Seats> seatsInput = new ArrayList<>();
-            busInputDto.getSeats().forEach(seatItem -> {
-                Seats seat = new Seats();
-                seat.setNumber(seatItem.getNumber());
-                seat.setPrice(seatItem.getPrice());
-                seat.setType(seatItem.getType());
-                seatsInput.add(seat);
-            });
+            for(int seatNum = 1; seatNum < busInputDto.getTotalSeats() + 1; seatNum++) {
+                Seats lowerSeat = new Seats();
+                lowerSeat.setId(new ObjectId().toString());
+                lowerSeat.setNumber(Integer.toString(seatNum));
+                lowerSeat.setPrice(seatNum > 3 && seatNum < 28 ? busInputDto.getSeats().getLowerPriceMiddle() : busInputDto.getSeats().getLowerPriceFistAndLast());
+                lowerSeat.setType(SeatType.LOWER);
+                seatsInput.add(lowerSeat);
+
+                Seats upperSeat = new Seats();
+                upperSeat.setId(new ObjectId().toString());
+                upperSeat.setNumber(Integer.toString(seatNum));
+                upperSeat.setPrice(seatNum > 3 && seatNum < 28 ? busInputDto.getSeats().getUpperPriceMiddle() : busInputDto.getSeats().getUpperPriceFistAndLast());
+                upperSeat.setType(SeatType.UPPER);
+                seatsInput.add(upperSeat);
+            }
 
             bus.setSeats(seatsInput);
             bus.setAmenities(busInputDto.getAmenities());

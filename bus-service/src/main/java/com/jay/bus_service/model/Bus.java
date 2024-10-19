@@ -21,6 +21,7 @@ import java.util.Map;
 public class Bus {
     @Id
     private String id;
+    private Long staffId;
     private String operatorName;
     private String phone;
 

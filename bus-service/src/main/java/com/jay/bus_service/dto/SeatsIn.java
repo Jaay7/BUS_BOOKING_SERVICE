@@ -5,7 +5,9 @@ import lombok.Data;
 
 @Data
 public class SeatsIn {
-    private String number;
-    private String price;
-    private SeatType type;
+    private Integer lowerPriceFistAndLast;
+    private Integer upperPriceFistAndLast;
+
+    private Integer lowerPriceMiddle;
+    private Integer upperPriceMiddle;
 }

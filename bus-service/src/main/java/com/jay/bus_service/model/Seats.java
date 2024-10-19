@@ -15,6 +15,6 @@ public class Seats {
     @Id
     private String id;
     private String number;
-    private String price;
+    private Integer price;
     private SeatType type;
 }

@@ -28,8 +28,8 @@ public class User {
     @Temporal(TemporalType.DATE)
     private Date dob;
 
-    private Integer totaltrips;
-    private Integer totaldistance;
+    private Integer totaltrips = 0;
+    private Integer totaldistance = 0;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Passenger> passengers = new ArrayList<>();

@@ -21,7 +21,7 @@ public class BusInputDto {
 
     private List<StopsIn> stops = new ArrayList<>();
     private List<RestStopsIn> restStops = new ArrayList<>();
-    private List<SeatsIn> seats = new ArrayList<>();
+    private SeatsIn seats;
 
     private List<String> amenities = new ArrayList<>();
 }

@@ -7,4 +7,6 @@ import java.util.Map;
 
 public interface BusDAL {
     ResponseEntity<?> addBusData(String token, BusInputDto busInputDto);
+
+    ResponseEntity<?> getBusDataByStaffId(String token);
 }

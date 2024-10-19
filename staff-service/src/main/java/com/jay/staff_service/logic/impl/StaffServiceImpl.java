@@ -1,5 +1,6 @@
 package com.jay.staff_service.logic.impl;
 
+import com.jay.staff_service.dto.StaffDto;
 import com.jay.staff_service.model.Staff;
 import com.jay.staff_service.utils.JwtUtil;
 import com.jay.staff_service.dto.StaffLoginDto;
@@ -72,7 +73,15 @@ public class StaffServiceImpl implements StaffService {
     public ResponseEntity<?> currentStaff(String token) {
         String email = JwtUtil.extractSubject(token);
         if (staffAlreadyExist(email).isPresent()) {
-            return new ResponseEntity<>(staffAlreadyExist(email).get(), HttpStatus.FOUND);
+            Staff staff = staffAlreadyExist(email).get();
+            StaffDto staffDto = new StaffDto();
+            staffDto.setId(staff.getId());
+            staffDto.setName(staff.getName());
+            staffDto.setEmail(staff.getEmail());
+            staffDto.setPassword(staff.getPassword());
+            staffDto.setRole(staff.getRole());
+            staffDto.setCreatedAt(staff.getCreatedAt());
+            return new ResponseEntity<>(staffDto, HttpStatus.FOUND);
         } else {
             return new ResponseEntity<>("Token is Invalid/Expired", HttpStatus.BAD_REQUEST);
         }

@@ -15,6 +15,6 @@ public interface StaffController {
     ResponseEntity<?> loginStaffApi(@RequestBody StaffLoginDto loginInput);
 
     @GetMapping("/")
-    ResponseEntity<?> currentStaffApi(@RequestHeader(name = "Authorization") String token);
+    ResponseEntity<?> currentStaffApi(@RequestParam(name = "token") String token);
 
 }

@@ -1,5 +1,6 @@
 package com.jay.bus_service.model;
 
+import com.jay.bus_service.utils.enums.StopType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,4 +20,5 @@ public class Stops {
 
     private String name;
     private LocalDateTime time;
+    private StopType type;
 }

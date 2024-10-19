@@ -1,5 +1,6 @@
 package com.jay.bus_service.dto;
 
+import com.jay.bus_service.utils.enums.StopType;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -8,4 +9,5 @@ import java.time.LocalDateTime;
 public class StopsIn {
     private String name;
     private LocalDateTime time;
+    private StopType type;
 }

@@ -7,6 +7,8 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,7 +19,7 @@ public class Route {
     private String id;
     private String from;
     private String to;
-
+    private List<String> via = new ArrayList<>();
     private LocalDateTime departureTime;
     private LocalDateTime arrivalTime;
 }
