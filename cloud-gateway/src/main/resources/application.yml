@@ -1,5 +1,7 @@
 server:
   port: 8080
+  servlet:
+    context-path: /
 
 spring:
   application:
@@ -10,15 +12,40 @@ spring:
         - id: USER-SERVICE
           uri: lb://USER-SERVICE
           predicates:
-            - Path=/user/**, /passenger/**
+            - Path=/user/**, /passenger/**, /USER-SERVICE/v3/api-docs, /PASSENGER-SERVICE/v3/api-docs
         - id: STAFF-SERVICE
           uri: lb://STAFF-SERVICE
           predicates:
-            - Path=/staff/**
+            - Path=/staff/**, /STAFF-SERVICE/v3/api-docs
         - id: BUS-SERVICE
           uri: lb://BUS-SERVICE
           predicates:
-            - Path=/bus/**
+            - Path=/bus/**, /BUS-SERVICE/v3/api-docs
+
+springdoc:
+  enable-native-support: true
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    config-url: /v3/api-docs/swagger-config
+    urls:
+      - url: /v3/api-docs
+        name: API Gateway Service
+        primaryName: API Gateway Service
+      - url: /USER-SERVICE/v3/api-docs
+        name: USER SERVICE
+        primaryName: USER SERVICE
+      - url: /PASSENGER-SERVICE/v3/api-docs
+        name: PASSENGER SERVICE
+        primaryName: PASSENGER SERVICE
+      - url: /STAFF-SERVICE/v3/api-docs
+        name: STAFF SERVICE
+        primaryName: STAFF SERVICE
+      - url: /BUS-SERVICE/v3/api-docs
+        name: BUS SERVICE
+        primaryName: BUS SERVICE
 
 eureka:
   client:

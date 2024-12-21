@@ -7,6 +7,18 @@ spring:
       uri:
 #      database: booking
 
+openapi:
+  service:
+    title: BUS-SERVICE DOC
+    version: 1.0.0
+    url: http://localhost:8080
+
+springdoc:
+  api-docs:
+    path: /BUS-SERVICE/v3/api-docs
+  swagger-ui:
+    path: /BUS-SERVICE/swagger-ui.html
+
 server:
   port: 8082
 

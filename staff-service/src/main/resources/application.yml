@@ -13,6 +13,17 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
+openapi:
+  service:
+    title: STAFF-SERVICE DOC
+    version: 1.0.0
+    url: http://localhost:8080
+
+springdoc:
+  api-docs:
+    path: /STAFF-SERVICE/v3/api-docs
+  swagger-ui:
+    path: /STAFF-SERVICE/swagger-ui.html
 
 #  security:
 #    user:
